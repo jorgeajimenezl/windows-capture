@@ -61,7 +61,3 @@ ctrlc = "3.5.1"
 [package.metadata.docs.rs]
 default-target = "x86_64-pc-windows-msvc"
 targets = ["x86_64-pc-windows-msvc"]
-
-[[example]]
-name = "graphics_capture"
-doc-scrape-examples = false
