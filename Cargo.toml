@@ -73,14 +73,3 @@ targets = ["x86_64-pc-windows-msvc"]
 [[example]]
 name = "graphics_capture"
 doc-scrape-examples = false
-
-[[example]]
-name = "dxgi_duplication"
-doc-scrape-examples = false
-
-[[example]]
-name = "cli"
-doc-scrape-examples = false
-
-[workspace]
-members = ["windows-capture-python"]

@@ -170,11 +170,6 @@ pub(crate) mod winrt;
 pub mod capture;
 /// Internal module for Direct3D 11 related functionality.
 pub mod d3d11;
-/// Contains types and functions related to the DXGI Desktop Duplication API.
-pub mod dxgi_duplication_api;
-/// Contains the encoder functionality for encoding captured frames, including
-/// [`crate::encoder::VideoEncoder`].
-pub mod encoder;
 /// Contains the [`crate::frame::Frame`] struct and related types for representing captured frames.
 pub mod frame;
 /// Contains the types and functions related to the Graphics Capture API.

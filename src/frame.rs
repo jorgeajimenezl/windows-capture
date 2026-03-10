@@ -1,5 +1,3 @@
-use std::fs::{self};
-use std::path::Path;
 use std::{io, ptr, slice};
 
 use rayon::iter::{IntoParallelIterator, ParallelIterator};
@@ -12,7 +10,6 @@ use windows::Win32::Graphics::Direct3D11::{
 };
 use windows::Win32::Graphics::Dxgi::Common::{DXGI_FORMAT, DXGI_SAMPLE_DESC};
 
-use crate::encoder::{self, ImageEncoder, ImageEncoderError, ImageEncoderPixelFormat, ImageFormat};
 use crate::settings::ColorFormat;
 
 #[derive(thiserror::Error, Debug)]
@@ -27,11 +24,6 @@ pub enum Error {
     /// The current [`ColorFormat`] cannot be saved as an image.
     #[error("This color format is not supported for saving as an image")]
     UnsupportedFormat,
-    /// Image encoding failed.
-    ///
-    /// Wraps [`crate::encoder::ImageEncoderError`].
-    #[error("Failed to encode the image buffer to image bytes with the specified format: {0}")]
-    ImageEncoderError(#[from] encoder::ImageEncoderError),
     /// An I/O error occurred while writing the image to disk.
     ///
     /// Wraps [`std::io::Error`].
@@ -305,16 +297,6 @@ impl<'a> Frame<'a> {
             self.buffer()
         }
     }
-
-    /// Saves the frame buffer as an image to the specified path.
-    #[inline]
-    pub fn save_as_image<T: AsRef<Path>>(&mut self, path: T, format: ImageFormat) -> Result<(), Error> {
-        let mut frame_buffer = self.buffer()?;
-
-        frame_buffer.save_as_image(path, format)?;
-
-        Ok(())
-    }
 }
 
 /// Represents a frame buffer containing pixel data.
@@ -433,26 +415,5 @@ impl<'a> FrameBuffer<'a> {
         });
 
         &buffer[0..frame_size]
-    }
-
-    /// Saves the frame buffer as an image to the specified path.
-    #[inline]
-    pub fn save_as_image<T: AsRef<Path>>(&mut self, path: T, format: ImageFormat) -> Result<(), Error> {
-        let width = self.width;
-        let height = self.height;
-
-        let pixel_format = match self.color_format {
-            ColorFormat::Rgba8 => ImageEncoderPixelFormat::Rgba8,
-            ColorFormat::Bgra8 => ImageEncoderPixelFormat::Bgra8,
-            _ => return Err(ImageEncoderError::UnsupportedFormat.into()),
-        };
-
-        let mut buffer = Vec::new();
-        let bytes =
-            ImageEncoder::new(format, pixel_format)?.encode(self.as_nopadding_buffer(&mut buffer), width, height)?;
-
-        fs::write(path, bytes)?;
-
-        Ok(())
     }
 }
