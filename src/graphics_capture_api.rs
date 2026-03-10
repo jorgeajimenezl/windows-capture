@@ -121,6 +121,7 @@ impl GraphicsCaptureApi {
         d3d_device_context: ID3D11DeviceContext,
         item_with_details: GraphicsCaptureItemType,
         callback: Arc<Mutex<T>>,
+        buffer_pool_size: i32,
         cursor_capture_settings: CursorCaptureSettings,
         draw_border_settings: DrawBorderSettings,
         secondary_window_settings: SecondaryWindowSettings,
@@ -176,7 +177,7 @@ impl GraphicsCaptureApi {
         let pixel_format = DirectXPixelFormat(color_format as i32);
 
         // Create frame pool
-        let frame_pool = Direct3D11CaptureFramePool::Create(&direct3d_device, pixel_format, 1, item.Size()?)?;
+        let frame_pool = Direct3D11CaptureFramePool::Create(&direct3d_device, pixel_format, buffer_pool_size, item.Size()?)?;
         let frame_pool = Arc::new(frame_pool);
 
         // Create capture session

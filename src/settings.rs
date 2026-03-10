@@ -113,6 +113,8 @@ pub struct Settings<Flags, T: TryInto<GraphicsCaptureItemType>> {
     pub(crate) dirty_region_settings: DirtyRegionSettings,
     /// The pixel format for the captured frames.
     pub(crate) color_format: ColorFormat,
+    /// Size of the buffer pool for captured frames.
+    pub(crate) buffer_pool_size: u32,
     /// User-defined flags that can be passed to the capture implementation.
     pub(crate) flags: Flags,
 }
@@ -130,6 +132,7 @@ impl<Flags, T: TryInto<GraphicsCaptureItemType>> Settings<Flags, T> {
         minimum_update_interval_settings: MinimumUpdateIntervalSettings,
         dirty_region_settings: DirtyRegionSettings,
         color_format: ColorFormat,
+        buffer_pool_size: u32,
         flags: Flags,
     ) -> Self {
         Self {
@@ -140,6 +143,7 @@ impl<Flags, T: TryInto<GraphicsCaptureItemType>> Settings<Flags, T> {
             minimum_update_interval_settings,
             dirty_region_settings,
             color_format,
+            buffer_pool_size,
             flags,
         }
     }

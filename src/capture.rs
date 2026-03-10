@@ -221,6 +221,10 @@ pub enum GraphicsCaptureApiError<E> {
     /// [`GraphicsCaptureApiHandler::on_closed`].
     #[error("Frame handler error: {0}")]
     FrameHandlerError(E),
+    
+    /// The buffer pool size provided in the settings is invalid (for example, zero).
+    #[error("Invalid buffer pool size")]
+    InvalidBufferPoolSize,
 }
 
 /// The context provided to the capture handler.
@@ -284,6 +288,7 @@ pub trait GraphicsCaptureApiHandler: Sized {
             d3d_device_context,
             settings.item.try_into().map_err(|_| GraphicsCaptureApiError::ItemConvertFailed)?,
             callback,
+            settings.buffer_pool_size.try_into().map_err(|_| GraphicsCaptureApiError::InvalidBufferPoolSize)?,
             settings.cursor_capture_settings,
             settings.draw_border_settings,
             settings.secondary_window_settings,
@@ -386,6 +391,7 @@ pub trait GraphicsCaptureApiHandler: Sized {
                 d3d_device_context,
                 settings.item.try_into().map_err(|_| GraphicsCaptureApiError::ItemConvertFailed)?,
                 callback.clone(),
+                settings.buffer_pool_size.try_into().map_err(|_| GraphicsCaptureApiError::InvalidBufferPoolSize)?,
                 settings.cursor_capture_settings,
                 settings.draw_border_settings,
                 settings.secondary_window_settings,
