@@ -161,6 +161,8 @@
 
 /// Exported for the trait bounds
 pub use windows::Graphics::Capture::GraphicsCaptureItem;
+/// Re-export for downstream crates that need to hold capture frames.
+pub use frame::HeldCaptureFrame;
 
 /// Contains safe wrapper for WinRT initialization.
 pub(crate) mod winrt;

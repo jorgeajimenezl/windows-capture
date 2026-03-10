@@ -12,6 +12,17 @@ use windows::Win32::Graphics::Dxgi::Common::{DXGI_FORMAT, DXGI_SAMPLE_DESC};
 
 use crate::settings::ColorFormat;
 
+/// Keeps a WGC pool slot reserved by holding a cloned COM reference to the
+/// [`Direct3D11CaptureFrame`].  When this value is dropped the slot is released
+/// back to the frame pool.
+pub struct HeldCaptureFrame {
+    _capture_frame: Direct3D11CaptureFrame,
+}
+
+// Direct3D11CaptureFrame is a WinRT COM object with atomic AddRef/Release.
+unsafe impl Send for HeldCaptureFrame {}
+unsafe impl Sync for HeldCaptureFrame {}
+
 #[derive(thiserror::Error, Debug)]
 /// Errors that can occur while working with captured frames and buffers.
 pub enum Error {
@@ -121,6 +132,17 @@ impl<'a> Frame<'a> {
     #[must_use]
     pub const fn color_format(&self) -> ColorFormat {
         self.color_format
+    }
+
+    /// Clone the capture frame COM object so the WGC pool slot stays reserved
+    /// (and the underlying texture remains valid) beyond the `on_frame_arrived`
+    /// callback lifetime.
+    #[inline]
+    #[must_use]
+    pub fn hold_capture_frame(&self) -> HeldCaptureFrame {
+        HeldCaptureFrame {
+            _capture_frame: self.capture_frame.clone(),
+        }
     }
 
     /// Gets the raw surface of the frame.
